@@ -1,36 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment</title>
+    <title>Life Hospital - Appointment</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
     <nav>
-        <div class="logo">Life Hospital</div>
-        <a href="index.html" class="btn">Home</a>
+        <div class="logo-container">
+            <img src="logo.png" alt="Hospital Logo" class="logo">
+        </div>
+        <a href="index.html" class="btn">Return to Homepage</a>
     </nav>
 </header>
 
 <section class="appointment">
-    <h2>Book an Appointment</h2>
+    <h2>Appointment Booking</h2><br><br>
     <form id="appointment-form">
-        <input type="text" id="name" placeholder="Full Name" required>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="number" id="phone" placeholder="Phone Number" required>
-        <input type="number" id="age" placeholder="Age" required>
-        <input type="text" id="purpose" placeholder="Purpose of Visit" required>
-        <select id="gender" required>
+        <input type="text" autocomplete="on" class="field" id="name" placeholder="Full Name" required><br>
+        <input type="email" autocomplete="on" class="field" id="email" placeholder="Email-id"><br>
+        <input type="number" autocomplete="on" class="field" id="phone" placeholder="Phone Number" required><br>
+        <input type="number" class="field" id="age" placeholder="Age" required><br>
+        <input type="text" class="field" id="purpose" placeholder="Purpose of Visit" required><br>
+        <select class="field" id="gender" required>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-        </select>
-        <input type="date" id="date" required>
-        <button type="submit" class="btn">Submit</button>
+            <option value="Other">Other</option>
+        </select><br>
+        <input type="date" class="field" id="date" required><br><br><br>
+        <button type="submit" class="btn">Confirm Booking</button>
     </form>
 </section>
 
-<script type="module" src="appointment.js"></script>
+<script type="module">
+    // Import Firebase dependencies
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
+        authDomain: "hospital-47fce.firebaseapp.com",
+        projectId: "hospital-47fce",
+        storageBucket: "hospital-47fce.appspot.com",
+        messagingSenderId: "54581383019",
+        appId: "1:54581383019:web:07333ea8bf1594999b062e",
+        measurementId: "G-4EB69QFJDZ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("appointment-form").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        // Collecting input values
+        const patientName = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim() || "Not Provided";
+        const phone = parseInt(document.getElementById("phone").value);
+        const age = parseInt(document.getElementById("age").value);
+        const purpose = document.getElementById("purpose").value.trim();
+        const gender = document.getElementById("gender").value === "Male"; // Storing as boolean
+        const appointmentDate = document.getElementById("date").value;
+
+        if (!patientName || !phone || !age || !purpose || !appointmentDate) {
+            alert("Please fill in all required fields correctly!");
+            return;
+        }
+
+        try {
+            // Reference to the "Appointments" document inside "Life Hospital" collection
+            const appointmentRef = doc(db, "Life Hospital", "Appointments");
+
+            // Fetch existing document data
+            const docSnap = await getDoc(appointmentRef);
+            let existingData = docSnap.exists() ? docSnap.data() : {};
+
+            // Adding new patient data under their name as a field (map)
+            const newPatientData = {
+                "Age": age,
+                "E-mail": email,
+                "Gender": gender,
+                "Phone Number": phone,
+                "Purpose": purpose,
+                "Time": new Date(appointmentDate),
+                "Token": Math.floor(Math.random() * 100) + 1, // Random token number
+                "Last Visited": new Date()
+            };
+
+            // Update Firestore document correctly
+            await updateDoc(appointmentRef, { [patientName]: newPatientData });
+
+            alert("Appointment booked successfully!");
+            document.getElementById("appointment-form").reset();
+        } catch (error) {
+            console.error("Error booking appointment: ", error);
+            alert("Failed to book appointment. Please try again later.");
+        }
+    });
+</script>
+
 </body>
 </html>
