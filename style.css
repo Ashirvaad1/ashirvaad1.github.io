@@ -25,6 +25,7 @@ nav {
     left: 0;
     z-index: 1000;
     transition: background 0.3s ease-in-out;
+	position: fixed;
 }
 
 .logo-container {
@@ -204,10 +205,4 @@ footer {
 {
 	padding: 45px 15px 45px 15px;
 }
-}
-
-@media (min-width: 768px) {
-    nav {
-        position: fixed;
-    }
 }
