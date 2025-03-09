@@ -191,7 +191,6 @@ footer {
 
 @media (max-width: 767px) {
     nav {
-        position: relative;
         flex-direction: row;
         justify-content: space-between;
         padding: 10px;
