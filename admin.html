@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Hospital - Appointments</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo-container">
+            <img src="logo.png" alt="Hospital Logo" class="logo">
+        </div>
+        <a href="index.html" class="btn">Return to Homepage</a>
+    </nav>
+</header>
+<section class="appointments-container">
+<div id="options"><div id="searchname"><input type="text" id="search" placeholder="Search by name..."></div><br>
+        <select id="sort">
+            <option value="oldest">Oldest to Latest</option>
+            <option value="latest">Latest to Oldest</option>
+        </select></div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Purpose</th>
+                <th>Time</th>
+                <th>Token</th>
+                <th>Last Visited</th>
+            </tr>
+        </thead>
+        <tbody id="appointments-table">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</section>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
+        authDomain: "hospital-47fce.firebaseapp.com",
+        projectId: "hospital-47fce",
+        storageBucket: "hospital-47fce.appspot.com",
+        messagingSenderId: "54581383019",
+        appId: "1:54581383019:web:07333ea8bf1594999b062e",
+        measurementId: "G-4EB69QFJDZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const tableBody = document.getElementById("appointments-table");
+    const searchInput = document.getElementById("search");
+    const sortSelect = document.getElementById("sort");
+
+    async function fetchAppointments() {
+        const appointmentRef = doc(db, "Life Hospital", "Appointments");
+        const docSnap = await getDoc(appointmentRef);
+        if (!docSnap.exists()) return;
+        
+        let data = docSnap.data();
+        let entries = Object.entries(data);
+        
+        // Sorting based on selection
+        if (sortSelect.value === "latest") {
+            entries.sort((a, b) => new Date(b[1].Time) - new Date(a[1].Time));
+        } else {
+            entries.sort((a, b) => new Date(a[1].Time) - new Date(b[1].Time));
+        }
+        
+        displayAppointments(entries);
+    }
+
+    function displayAppointments(entries) {
+        tableBody.innerHTML = "";
+        entries.forEach(([name, details]) => {
+            if (searchInput.value && !name.toLowerCase().includes(searchInput.value.toLowerCase())) return;
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${name}</td>
+                    <td>${details.Age}</td>
+                    <td>${details["E-mail"]}</td>
+                    <td>${details["Phone Number"]}</td>
+                    <td>${details.Gender ? "Male" : "Female"}</td>
+                    <td>${details.Purpose}</td>
+                    <td>${new Date(details.Time).toLocaleString()}</td>
+                    <td>${details.Token}</td>
+                    <td>${new Date(details["Last Visited"]).toLocaleString()}</td>
+                </tr>`;
+        });
+    }
+
+    fetchAppointments();
+    setInterval(fetchAppointments, 120000); // Auto-update every 2 minutes
+    searchInput.addEventListener("input", fetchAppointments);
+    sortSelect.addEventListener("change", fetchAppointments);
+</script>
+</body>
+</html>

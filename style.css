@@ -25,7 +25,7 @@ nav {
     left: 0;
     z-index: 1000;
     transition: background 0.3s ease-in-out;
-	position: fixed;
+    position: fixed;
 }
 
 .logo-container {
@@ -37,7 +37,7 @@ nav {
     width: 50px;
     height: 50px;
     margin-right: 5px;
-background: transparent;
+    background: transparent;
 }
 
 .hospital-name {
@@ -59,168 +59,70 @@ background: transparent;
     background: #218838;
 }
 
-/* Hero Section */
-.hero {
-    position: relative;
-    height: 60vh;
+/* Appointments Section */
+.appointments-container {
+    padding-top: 80px;
+    width: 90%;
+    margin: auto;
+}
+
+/* Search and Sort Bar */
+.search-sort-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    color: white;
+    margin-bottom: 15px;
 }
 
-.hero-bg {
-    position: absolute;
+#search, #sort {
+    width: 45%;
+    height: 40px;
+    border-radius: 5px;
+    padding-left: 10px;
+    font-size: 18px;
+}
+
+/* Table Styling */
+table {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(100%);
-}
-
-h1
-{
-	font-size: 50px;
-}
-#description
-{
-	padding-top: 10px;
-	font-size: 20px;
-}
-.hero-text {
-    position: relative;
-    z-index: 2;
-    text-align: left;
-	margin-left: 30px;
-    max-width: 50%;
-    animation: fadeIn 2s ease-in-out;
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-h2
-{
-	font-size: 35px;
-}
-h3
-{
-	font-size: 20px;
-	padding-bottom: 10px;
-}
-/* Doctors Section */
-.doctors-section {
-    padding: 45px 45px 45px 45px;
-    text-align: center;
-}
-
-.doctors-container {
-    display: flex;
-    gap: 25px;
-	padding-top: 45px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 10px;
-}
-
-.doctor-card {
-    flex: 0 0 auto;
-    width: 250px;
+    border-collapse: collapse;
     background: white;
-    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    transition: transform 0.3s;
-    scroll-snap-align: start;
+    overflow: hidden;
 }
 
-.doctor-card:hover {
-    transform: scale(1.05);
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
 }
 
-.doctor-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-}
-
-/* Footer */
-footer {
-    padding: 20px 0px 10px 0px;
-    text-align: center;
-    background: #222;
+th {
+    background: #007bff;
     color: white;
 }
 
-#footer
+tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+#searchname
 {
-	padding-top: 15px;
-	display: flex;
-	justify-content: center;
-	text-align: left;
-}
-.social-links {
-    margin-top: 10px;
-	text-align: center;
+	margin-right: 1px;
 }
 
-.social-icon {
-    margin: 0 10px;
-    color: white;
-    font-size: 20px;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.links
-{
-	height: 25px;
-	width: 25px;
-}
-
-.social-icon:hover {
-    color: #ffcc00;
-}
-
-#me
-{
-	font-size: 19px;
-}
-
-.appointment
-{
-	padding-top: 60px;
-	padding-bottom: 10px;
-	display: flexbox;
-	justify-content: center;
-	text-align: center;
-}
-
-.field
-{
-	width: 284px;
-	margin: 20px 20px;
-	height: 40px;
-	border-radius: 5px;
-	padding-left: 3px;
-	font-size: 18px;
-}
-
+/* Responsive Design */
 @media (max-width: 767px) {
-    nav {
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 10px;
+    .search-sort-container {
+        flex-direction: column;
+        gap: 10px;
     }
-.hero-text
-{
-	max-width: 80%;
-	margin-left: 10px;
-}
-.doctors-section
-{
-	padding: 45px 15px 45px 15px;
-}
+    #search, #sort {
+        width: 100%;
+    }
+    table {
+        font-size: 14px;
+    }
 }
