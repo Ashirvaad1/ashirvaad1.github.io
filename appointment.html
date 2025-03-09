@@ -7,30 +7,30 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">Hospital Name</div>
-            <a href="index.html" class="btn">Home</a>
-        </nav>
-    </header>
+<header>
+    <nav>
+        <div class="logo">Life Hospital</div>
+        <a href="index.html" class="btn">Home</a>
+    </nav>
+</header>
 
-    <section class="appointment">
-        <h2>Book an Appointment</h2>
-        <form>
-            <input type="text" placeholder="Full Name" required>
-            <input type="email" placeholder="Email" required>
-            <input type="date" required>
-            <select>
-                <option>Select a Doctor</option>
-                <option>Dr. A Sharma (Cardiologist)</option>
-                <option>Dr. R Mehta (Neurologist)</option>
-            </select>
-            <button type="submit" class="btn">Submit</button>
-        </form>
-    </section>
+<section class="appointment">
+    <h2>Book an Appointment</h2>
+    <form id="appointment-form">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="number" id="phone" placeholder="Phone Number" required>
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="text" id="purpose" placeholder="Purpose of Visit" required>
+        <select id="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+        <input type="date" id="date" required>
+        <button type="submit" class="btn">Submit</button>
+    </form>
+</section>
 
-    <footer>
-        <p>© 2025 Hospital Name | All Rights Reserved</p>
-    </footer>
+<script type="module" src="appointment.js"></script>
 </body>
 </html>
