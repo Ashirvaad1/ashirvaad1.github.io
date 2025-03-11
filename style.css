@@ -328,10 +328,10 @@ nav {
 }
 
 #search, #sort {
-    width: 45%;
+    width: 25%;
     height: 40px;
     border-radius: 5px;
-    padding-left: 10px;
+    padding-left: 8px;
     font-size: 18px;
 }
 

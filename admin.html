@@ -16,11 +16,17 @@
     </nav>
 </header>
 <section class="appointments-container">
-<div id="options"><div id="searchname"><input type="text" id="search" placeholder="Search by name..."></div><br>
+    <div id="options">
+        <div id="searchname">
+            <input type="text" id="search" placeholder="Search by name...">
+        </div>
+        <br>
         <select id="sort">
-            <option value="oldest">Oldest to Latest</option>
-            <option value="latest">Latest to Oldest</option>
-        </select></div>
+            <option value="Time">Time</option>
+            <option value="Token">Token</option>
+        </select>
+        <span id="sort-order" style="cursor: pointer; font-size: 30px;">⬆️</span>
+    </div>
     <table>
         <thead>
             <tr>
@@ -55,30 +61,62 @@
         measurementId: "G-4EB69QFJDZ"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    // Get elements
     const tableBody = document.getElementById("appointments-table");
     const searchInput = document.getElementById("search");
-    const sortSelect = document.getElementById("sort");
+    const sortMethodSelect = document.getElementById("sort");
+    const sortOrderToggle = document.getElementById("sort-order");
 
+    // Sorting state
+    let ascending = true; // Default: Ascending
+
+    // Toggle sorting order when clicking emoji
+    sortOrderToggle.addEventListener("click", () => {
+        ascending = !ascending;
+        sortOrderToggle.textContent = ascending ? "⬆️" : "⬇️";
+        fetchAppointments();
+    });
+
+    // Fetch and sort appointments
     async function fetchAppointments() {
         const appointmentRef = doc(db, "Life Hospital", "Appointments");
         const docSnap = await getDoc(appointmentRef);
         if (!docSnap.exists()) return;
-        
+
         let data = docSnap.data();
         let entries = Object.entries(data);
-        
-        // Sorting based on selection
-        if (sortSelect.value === "latest") {
-            entries.sort((a, b) => new Date(b[1].Time) - new Date(a[1].Time));
-        } else {
-            entries.sort((a, b) => new Date(a[1].Time) - new Date(b[1].Time));
-        }
-        
+
+        // Sorting logic based on selection
+        const sortBy = sortMethodSelect.value;
+        entries.sort((a, b) => {
+            if (sortBy === "Time") {
+                let timeA = a[1].Time.toDate();
+                let timeB = b[1].Time.toDate();
+
+                let dateA = timeA.toISOString().split("T")[0]; // Extract Date (YYYY-MM-DD)
+                let dateB = timeB.toISOString().split("T")[0];
+
+                if (dateA === dateB) {
+                    // If same date, sort by exact time
+                    return ascending ? timeA - timeB : timeB - timeA;
+                } else {
+                    return ascending ? new Date(dateA) - new Date(dateB) : new Date(dateB) - new Date(dateA);
+                }
+            } else if (sortBy === "Token") {
+                return ascending
+                    ? (Number(a[1].Token) || 0) - (Number(b[1].Token) || 0)
+                    : (Number(b[1].Token) || 0) - (Number(a[1].Token) || 0);
+            }
+        });
+
         displayAppointments(entries);
     }
 
+    // Display function
     function displayAppointments(entries) {
         tableBody.innerHTML = "";
         entries.forEach(([name, details]) => {
@@ -91,17 +129,18 @@
                     <td>${details["Phone Number"]}</td>
                     <td>${details.Gender ? "Male" : "Female"}</td>
                     <td>${details.Purpose}</td>
-                    <td>${new Date(details.Time).toLocaleString()}</td>
+                    <td>${details.Time?.toDate().toLocaleString()}</td>
                     <td>${details.Token}</td>
-                    <td>${new Date(details["Last Visited"]).toLocaleString()}</td>
+                    <td>${details["Last Visited"]?.toDate().toLocaleString()}</td>
                 </tr>`;
         });
     }
 
+    // Initial fetch
     fetchAppointments();
     setInterval(fetchAppointments, 1728);
     searchInput.addEventListener("input", fetchAppointments);
-    sortSelect.addEventListener("change", fetchAppointments);
+    sortMethodSelect.addEventListener("change", fetchAppointments);
 </script>
 </body>
 </html>
