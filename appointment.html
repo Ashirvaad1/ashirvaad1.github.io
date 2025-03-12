@@ -18,20 +18,49 @@
 
 <section class="appointment">
     <h2>Appointment Booking</h2><br><br>
-    <form id="appointment-form">
-        <input type="text" autocomplete="on" class="field" id="name" placeholder="Full Name" required><br>
-        <input type="email" autocomplete="on" class="field" id="email" placeholder="Email-id"><br>
-        <input type="number" autocomplete="on" class="field" id="phone" placeholder="Phone Number" required><br>
-        <input type="number" class="field" id="age" placeholder="Age" required><br>
-        <input type="text" class="field" id="purpose" placeholder="Purpose of Visit" required><br>
+<form id="appointment-form">
+    <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" autocomplete="on" class="field" id="name" placeholder="Full Name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email-id</label>
+        <input type="email" autocomplete="on" class="field" id="email" placeholder="Email-id">
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="number" autocomplete="on" class="field" id="phone" placeholder="Phone Number" required>
+    </div>
+
+    <div class="form-group">
+        <label for="age">Age</label>
+        <input type="number" class="field" id="age" placeholder="Age" required>
+    </div>
+
+    <div class="form-group">
+        <label for="purpose">Purpose of Visit</label>
+        <input type="text" class="field" id="purpose" placeholder="Purpose of Visit" required>
+    </div>
+
+    <div class="form-group">
+        <label for="gender">Gender</label>
         <select class="field" id="gender" required>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Other">Other</option>
-        </select><br>
-        <input type="date" class="field" id="date" required><br><br><br>
-        <button type="submit" class="btn">Confirm Booking</button>
-    </form>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="date">Appointment Date</label>
+        <input type="date" class="field" id="date" required>
+    </div>
+
+    <br>
+    <button type="submit" class="btn">Confirm Booking</button>
+</form>
 </section>
 
 <script type="module">

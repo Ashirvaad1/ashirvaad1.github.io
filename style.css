@@ -1,65 +1,3 @@
-/* General Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-    overflow-x: hidden;
-}
-
-body {
-    background-color: #f4f4f9;
-    color: #333;
-}
-
-/* Navigation Bar */
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 7px;
-    background: rgba(0, 123, 255, 0.9);
-    color: white;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    transition: background 0.3s ease-in-out;
-	position: fixed;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-    margin-right: 5px;
-background: transparent;
-}
-
-.hospital-name {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.btn {
-    padding: 16px 16px;
-    background: #28a745;
-    color: white;
-    text-decoration: none;
-    border-radius: 7px;
-    transition: background 0.3s;
-    font-size: 16px;
-}
-
-.btn:hover {
-    background: #218838;
-}
-
-/* Hero Section */
 .hero {
     position: relative;
     height: 60vh;
@@ -201,7 +139,7 @@ footer {
 .field
 {
 	width: 284px;
-	margin: 20px 20px;
+	margin: 5px 20px;
 	height: 40px;
 	border-radius: 5px;
 	padding-left: 3px;
@@ -211,28 +149,6 @@ footer {
 .appointments-container
 {
 	padding-top: 65px;
-}
-
-#search
-{
-	width: 284px;
-	margin: 20px 20px;
-	height: 40px;
-	border-radius: 5px;
-	padding-left: 3px;
-	font-size: 18px;
-	margin-right: 0px;
-}
-
-#sort
-{
-	width: 284px;
-	margin: 20px 20px;
-	height: 40px;
-	border-radius: 5px;
-	padding-left: 3px;
-	font-size: 18px;
-	margin-right: 0px;
 }
 
 @media (max-width: 767px) {
@@ -338,17 +254,18 @@ nav {
 /* Table Styling */
 table {
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
     border-collapse: collapse;
     background: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    overflow: hidden;
 }
 
 table th, table td {
     border: 1px solid #ccc;
     padding: 12px;
-    text-align: left;
+    text-align: center;
     font-size: 16px;
 }
 
@@ -364,6 +281,51 @@ tr:nth-child(even) {
 #searchname
 {
 	margin-right: 1px;
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 10px;
+}
+
+label {
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+    text-align: left;
+    margin-left: 22px;
+    margin-top: 10px;
+}
+
+#appointment-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the form fields */
+    justify-content: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column; /* Labels should be above inputs */
+    align-items: flex-start; /* Align labels to the left relative to inputs */
+    width: 320px; /* Set a consistent width */
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left; /* Left-align text */
+}
+
+.form-group .field {
+    width: 90%; /* Make input fields take the full width of their container */
+    height: 40px;
+    border-radius: 5px;
+    padding-left: 10px;
+    font-size: 18px;
+    text-align: left; /* Left-align text inside inputs */
 }
 
 /* Responsive Design */

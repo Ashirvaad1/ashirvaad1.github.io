@@ -25,19 +25,19 @@
             <option value="Time">Time</option>
             <option value="Token">Token</option>
         </select>
-        <span id="sort-order" style="cursor: pointer; font-size: 30px;">⬆️</span>
-    </div>
+        <span id="sort-order" style="cursor: pointer; font-size: 30px;">⬆️</span><br><br>
+    </div><div class="table-container">
     <table>
         <thead>
             <tr>
+	<th>Token</th>
                 <th>Name</th>
-                <th>Age</th>
-                <th>Email</th>
-                <th>Phone</th>
+	<th>Time</th>
                 <th>Gender</th>
+                <th>Age</th>
                 <th>Purpose</th>
-                <th>Time</th>
-                <th>Token</th>
+                <th>Phone</th>
+                <th>Email</th>
                 <th>Last Visited</th>
             </tr>
         </thead>
@@ -45,6 +45,7 @@
             <!-- Data will be inserted here -->
         </tbody>
     </table>
+</div>
 </section>
 
 <script type="module">
@@ -123,14 +124,14 @@
             if (searchInput.value && !name.toLowerCase().includes(searchInput.value.toLowerCase())) return;
             tableBody.innerHTML += `
                 <tr>
-                    <td>${name}</td>
-                    <td>${details.Age}</td>
-                    <td>${details["E-mail"]}</td>
-                    <td>${details["Phone Number"]}</td>
-                    <td>${details.Gender ? "Male" : "Female"}</td>
-                    <td>${details.Purpose}</td>
-                    <td>${details.Time?.toDate().toLocaleString()}</td>
                     <td>${details.Token}</td>
+                    <td>${name}</td>
+                    <td>${details.Time?.toDate().toLocaleString()}</td>
+                    <td>${details.Gender ? "Male" : "Female"}</td>
+                    <td>${details.Age}</td>
+                    <td>${details.Purpose}</td>
+                    <td>${details["Phone Number"]}</td>
+                    <td>${details["E-mail"]}</td>
                     <td>${details["Last Visited"]?.toDate().toLocaleString()}</td>
                 </tr>`;
         });
