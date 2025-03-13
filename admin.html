@@ -13,6 +13,7 @@
             <img src="logo.png" alt="Hospital Logo" class="logo">
         </div>
         <a href="index.html" class="btn">Return to Homepage</a>
+        <button id="logout-btn" class="btn">Logout</button>
     </nav>
 </header>
 <section class="appointments-container">
@@ -26,30 +27,32 @@
             <option value="Token">Token</option>
         </select>
         <span id="sort-order" style="cursor: pointer; font-size: 30px;">⬆️</span><br><br>
-    </div><div class="table-container">
-    <table>
-        <thead>
-            <tr>
-	<th>Token</th>
-                <th>Name</th>
-	<th>Time</th>
-                <th>Gender</th>
-                <th>Age</th>
-                <th>Purpose</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Last Visited</th>
-            </tr>
-        </thead>
-        <tbody id="appointments-table">
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
-</div>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Token</th>
+                    <th>Name</th>
+                    <th>Time</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Purpose</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Last Visited</th>
+                </tr>
+            </thead>
+            <tbody id="appointments-table">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
 </section>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -64,7 +67,25 @@
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Redirect unauthenticated users to login page
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = "login.html"; // Redirect if not logged in
+        }
+    });
+
+    // Logout function
+    document.getElementById("logout-btn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+            alert("Logged out successfully");
+            window.location.href = "login.html"; // Redirect to login page
+        }).catch((error) => {
+            console.error("Logout Error:", error);
+        });
+    });
 
     // Get elements
     const tableBody = document.getElementById("appointments-table");
@@ -73,7 +94,7 @@
     const sortOrderToggle = document.getElementById("sort-order");
 
     // Sorting state
-    let ascending = true; // Default: Ascending
+    let ascending = true;
 
     // Toggle sorting order when clicking emoji
     sortOrderToggle.addEventListener("click", () => {
@@ -102,7 +123,6 @@
                 let dateB = timeB.toISOString().split("T")[0];
 
                 if (dateA === dateB) {
-                    // If same date, sort by exact time
                     return ascending ? timeA - timeB : timeB - timeA;
                 } else {
                     return ascending ? new Date(dateA) - new Date(dateB) : new Date(dateB) - new Date(dateA);
@@ -139,7 +159,7 @@
 
     // Initial fetch
     fetchAppointments();
-    setInterval(fetchAppointments, 1728);
+    setInterval(fetchAppointments, 5000); // Refresh every 5 seconds
     searchInput.addEventListener("input", fetchAppointments);
     sortMethodSelect.addEventListener("change", fetchAppointments);
 </script>
