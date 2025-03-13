@@ -55,7 +55,7 @@
         const password = document.getElementById("password").value;
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            alert("Signed In Successfully!");
+            window.location.href="https://ashirvaad1.github.io/admin.html";
         } catch (error) {
             alert(error.message);
         }
