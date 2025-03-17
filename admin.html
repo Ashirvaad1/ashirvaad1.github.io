@@ -17,15 +17,19 @@
 </header>
 <section class="appointments-container">
     <div id="options">
-        <div id="searchname">
-            <input type="text" id="search" placeholder="Search by name...">
+        <div class="search-sort-container">
+            <div class="sort-container">
+                <select id="sort">
+                    <option value="Time">Time</option>
+                    <option value="Token">Token</option>
+                </select>
+                <span id="sort-order" style="cursor: pointer; font-size: 30px;">⬆️</span>
+            </div>
+            <div id="searchname">
+                <input type="text" id="search" placeholder="Search by name...">
+            </div>
         </div>
         <br>
-        <select id="sort">
-            <option value="Time">Time</option>
-            <option value="Token">Token</option>
-        </select>
-        <span id="sort-order" style="cursor: pointer; font-size: 30px;">⬆️</span><br><br>
     </div>
     <div class="table-container">
         <table>
