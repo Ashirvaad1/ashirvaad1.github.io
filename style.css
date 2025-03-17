@@ -308,7 +308,6 @@ label {
     text-align: left; /* Left-align text inside inputs */
 }
 
-/* Add this to your existing CSS */
 .search-sort-container {
     display: flex;
     justify-content: space-between;
@@ -323,7 +322,7 @@ label {
 }
 
 #searchname {
-    margin-left: auto; /* Pushes the search bar to the right */
+    margin-right: auto; /* Pushes the search bar to the left */
 }
 
 #search {
@@ -348,14 +347,17 @@ label {
         flex-direction: column;
         gap: 10px;
     }
+
     .sort-container {
         width: 100%; /* Make sort container full width */
         justify-content: flex-start; /* Align sort options to the left */
     }
+
     #searchname {
         width: 100%; /* Make search input full width */
-        margin-left: 0; /* Reset margin */
+        margin-right: 0; /* Reset margin */
     }
+
     #search, #sort {
         width: 100%;
     }
