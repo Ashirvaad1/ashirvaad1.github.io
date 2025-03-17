@@ -235,22 +235,6 @@ nav {
     margin: auto;
 }
 
-/* Search and Sort Bar */
-.search-sort-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-#search, #sort {
-    width: 25%;
-    height: 40px;
-    border-radius: 5px;
-    padding-left: 8px;
-    font-size: 18px;
-}
-
 /* Table Styling */
 table {
     width: 100%;
@@ -278,10 +262,6 @@ tr:nth-child(even) {
     background: #f2f2f2;
 }
 
-#searchname
-{
-	margin-right: 1px;
-}
 .table-container {
     width: 100%;
     overflow-x: auto;
