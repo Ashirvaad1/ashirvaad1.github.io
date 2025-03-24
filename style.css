@@ -351,6 +351,67 @@ label {
             border: 2px solid red;
         }
 
+/* Insights Panel Styles */
+.insights-panel {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    padding: 15px;
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.insights-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.close-insights {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #777;
+}
+
+.close-insights:hover {
+    color: #333;
+}
+
+.insight-item {
+    margin-bottom: 10px;
+}
+
+.insight-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.insight-value {
+    color: #007bff;
+    font-size: 18px;
+}
+
 /* Responsive Design */
 @media (max-width: 767px) {
     .search-sort-container {
