@@ -171,14 +171,26 @@
         displayAppointments(entries);
     }
 
-    // Update insights data
     function updateInsights(entries) {
-        const totalPatients = entries.length;
-        const newPatients = entries.filter(([_, details]) => !details["Last Visited"]).length;
+    const totalPatients = entries.length;
+    const currentDate = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1); // Set date to 1 month ago
+    
+    const newPatients = entries.filter(([_, details]) => {
+        // If no Last Visited date, consider as new patient
+        if (!details["Last Visited"]) return true;
         
-        totalPatientsEl.textContent = totalPatients;
-        newPatientsEl.textContent = newPatients;
-    }
+        // Convert Firestore timestamp to Date object
+        const lastVisitedDate = details["Last Visited"].toDate();
+        
+        // Check if last visit was more than a month ago
+        return lastVisitedDate < oneMonthAgo;
+    }).length;
+    
+    totalPatientsEl.textContent = totalPatients;
+    newPatientsEl.textContent = newPatients;
+}
 
     // Display function
     function displayAppointments(entries) {
