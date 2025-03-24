@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="insights-panel">
+    <div class="insights-header">
+        <span class="insights-title">Patient Insights</span>
+        <button class="close-insights">✕</button>
+    </div>
+    <div class="insight-item">
+        <div class="insight-label">Total Patients:</div>
+        <div class="insight-value" id="total-patients">0</div>
+    </div>
+    <div class="insight-item">
+        <div class="insight-label">New Patients:</div>
+        <div class="insight-value" id="new-patients">0</div>
+    </div>
+</div>
 <header>
     <nav>
         <div class="logo-container">
@@ -53,7 +67,6 @@
         </table>
     </div>
 </section>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
@@ -74,6 +87,26 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Get elements
+    const tableBody = document.getElementById("appointments-table");
+    const searchInput = document.getElementById("search");
+    const sortMethodSelect = document.getElementById("sort");
+    const sortOrderToggle = document.getElementById("sort-order");
+    const insightsPanel = document.querySelector('.insights-panel');
+    const closeInsightsBtn = document.querySelector('.close-insights');
+    const insightsBtn = document.getElementById('insights');
+    const totalPatientsEl = document.getElementById('total-patients');
+    const newPatientsEl = document.getElementById('new-patients');
+
+    // Toggle insights panel
+    insightsBtn.addEventListener('click', () => {
+        insightsPanel.style.display = 'block';
+    });
+
+    closeInsightsBtn.addEventListener('click', () => {
+        insightsPanel.style.display = 'none';
+    });
+
     // Redirect unauthenticated users to login page
     onAuthStateChanged(auth, (user) => {
         if (!user) {
@@ -90,12 +123,6 @@
             console.error("Logout Error:", error);
         });
     });
-
-    // Get elements
-    const tableBody = document.getElementById("appointments-table");
-    const searchInput = document.getElementById("search");
-    const sortMethodSelect = document.getElementById("sort");
-    const sortOrderToggle = document.getElementById("sort-order");
 
     // Sorting state
     let ascending = true;
@@ -115,6 +142,9 @@
 
         let data = docSnap.data();
         let entries = Object.entries(data);
+
+        // Update insights
+        updateInsights(entries);
 
         // Sorting logic based on selection
         const sortBy = sortMethodSelect.value;
@@ -141,6 +171,15 @@
         displayAppointments(entries);
     }
 
+    // Update insights data
+    function updateInsights(entries) {
+        const totalPatients = entries.length;
+        const newPatients = entries.filter(([_, details]) => !details["Last Visited"]).length;
+        
+        totalPatientsEl.textContent = totalPatients;
+        newPatientsEl.textContent = newPatients;
+    }
+
     // Display function
     function displayAppointments(entries) {
         tableBody.innerHTML = "";
@@ -156,7 +195,7 @@
                     <td>${details.Purpose}</td>
                     <td>${details["Phone Number"]}</td>
                     <td>${details["E-mail"]}</td>
-                    <td>${details["Last Visited"]?.toDate().toLocaleString()}</td>
+                    <td>${details["Last Visited"]?.toDate().toLocaleString() || 'Never'}</td>
                 </tr>`;
         });
     }
@@ -167,5 +206,4 @@
     searchInput.addEventListener("input", fetchAppointments);
     sortMethodSelect.addEventListener("change", fetchAppointments);
 </script>
-</body>
 </html>
