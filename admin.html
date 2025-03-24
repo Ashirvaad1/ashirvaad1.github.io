@@ -18,8 +18,11 @@
         <div class="insight-value" id="total-patients">0</div>
     </div>
     <div class="insight-item">
-        <div class="insight-label">New Patients:</div>
+        <div class="insight-label">Inactive Patients (1+ month):</div>
         <div class="insight-value" id="new-patients">0</div>
+    </div>
+    <div class="insights-chart-container">
+        <canvas id="visits-chart"></canvas>
     </div>
 </div>
 <header>
@@ -172,27 +175,104 @@
         displayAppointments(entries);
     }
 
-    function updateInsights(entries) {
+    let visitsChart = null;
+
+// Modify the updateInsights function
+function updateInsights(entries) {
     const totalPatients = entries.length;
     const currentDate = new Date();
     const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1); // Set date to 1 month ago
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
     
     const newPatients = entries.filter(([_, details]) => {
-        // If no Last Visited date, consider as new patient
         if (!details["Last Visited"]) return true;
-        
-        // Convert Firestore timestamp to Date object
         const lastVisitedDate = details["Last Visited"].toDate();
-        
-        // Check if last visit was more than a month ago
         return lastVisitedDate < oneMonthAgo;
     }).length;
     
     totalPatientsEl.textContent = totalPatients;
     newPatientsEl.textContent = newPatients;
+    
+    // Generate visit statistics for the chart
+    updateVisitsChart(entries);
 }
+    function updateVisitsChart(entries) {
+    // Group visits by date
+    const visitsByDate = {};
+    
+    entries.forEach(([_, details]) => {
+        const visitDate = details.Time?.toDate();
+        if (!visitDate) return;
+        
+        // Format date as YYYY-MM-DD for grouping
+        const dateKey = visitDate.toISOString().split('T')[0];
+        
+        if (!visitsByDate[dateKey]) {
+            visitsByDate[dateKey] = 0;
+        }
+        visitsByDate[dateKey]++;
+    });
 
+        const sortedDates = Object.keys(visitsByDate).sort();
+    const visitCounts = sortedDates.map(date => visitsByDate[date]);
+    
+    // Get or create chart canvas context
+    const ctx = document.getElementById('visits-chart').getContext('2d');
+    
+    // Destroy previous chart if it exists
+    if (visitsChart) {
+        visitsChart.destroy();
+    }
+    
+    // Create new chart
+    visitsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: sortedDates,
+            datasets: [{
+                label: 'Patients per day',
+                data: visitCounts,
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1,
+                tension: 0.1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Patients'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} patients`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+    
     // Display function
     function displayAppointments(entries) {
         tableBody.innerHTML = "";
