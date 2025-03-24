@@ -40,9 +40,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, multiFactor } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        
+
         const firebaseConfig = {
             apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
             authDomain: "hospital-47fce.firebaseapp.com",
@@ -51,7 +51,7 @@
             messagingSenderId: "54581383019",
             appId: "1:54581383019:web:07333ea8bf1594999b062e"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -61,24 +61,30 @@
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const phoneNumber = document.getElementById("phone").value;
-            
+
             try {
+                // Create user account
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-                
-                // Auto Verify Email (If Manual, Do It from Firebase Console)
+
+                // Send email verification
                 await sendEmailVerification(user);
                 alert("Verification email sent! Please check your inbox.");
-                
-                // Store phone number for MFA manually (Needs manual activation in Firebase Console)
+
+                // Auto-verify (override) email for instant verification
                 await setDoc(doc(db, "users", user.uid), {
                     email: email,
                     phoneNumber: phoneNumber,
-                    emailVerified: false, // Firebase updates this once verified
+                    emailVerified: true, // Forcefully marking as verified
                     mfaEnabled: false
                 });
-                
-                alert("User registered! Please verify your email and enable MFA in Firebase Console.");
+
+                alert("User registered & auto-verified! Enable MFA manually in Firebase Console.");
+
+                // Auto-sign in and redirect
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = "https://ashirvaad1.github.io/admin.html";
+
             } catch (error) {
                 alert(error.message);
             }
