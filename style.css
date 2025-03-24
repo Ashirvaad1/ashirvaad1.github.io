@@ -412,6 +412,18 @@ label {
     font-size: 18px;
 }
 
+/* Add to your style.css */
+.insights-panel {
+    width: 400px; /* Increased width to accommodate chart */
+    /* ... keep existing styles ... */
+}
+
+.insights-chart-container {
+    margin-top: 15px;
+    height: 200px;
+    position: relative;
+}
+
 /* Responsive Design */
 @media (max-width: 767px) {
     .search-sort-container {
