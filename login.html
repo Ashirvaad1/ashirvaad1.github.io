@@ -27,14 +27,22 @@
         <div class="form-group">
             <label for="password">Password</label>
             <input type="password" autocomplete="on" class="field" id="password" placeholder="Password">
-        </div><br>
+        </div>
+
+        <div id="otp-section" style="display: none;">
+            <label for="otp">Enter OTP</label>
+            <input type="text" id="otp" class="field" placeholder="OTP">
+            <button id="verifyOtp" class="btn">Verify OTP</button>
+        </div>
+
+        <br>
         <button id="signin" class="btn">Log in</button>
     </form>
 </section>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, multiFactor, PhoneAuthProvider, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
@@ -47,40 +55,57 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    let verificationId; 
 
     document.getElementById("signin").addEventListener("click", async (event) => {
         event.preventDefault(); // Prevent page reload
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
+
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            window.location.href="https://ashirvaad1.github.io/admin.html";
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            if (user.multiFactor.enrolledFactors.length > 0) {
+                // 2FA Required
+                document.getElementById("otp-section").style.display = "block";
+                requestOtp(user);
+            } else {
+                // No 2FA required, proceed to dashboard
+                window.location.href = "https://ashirvaad1.github.io/admin.html";
+            }
         } catch (error) {
             alert(error.message);
         }
     });
 
-    document.getElementById("googleSignIn").addEventListener("click", async () => {
+    async function requestOtp(user) {
         try {
-            await signInWithPopup(auth, provider);
-            alert("Signed in with Google!");
+            const recaptchaVerifier = new RecaptchaVerifier(auth, 'otp-section', {
+                size: "invisible"
+            });
+
+            const multiFactorSession = await multiFactor(user).getSession();
+            const phoneAuthProvider = new PhoneAuthProvider(auth);
+            verificationId = await phoneAuthProvider.verifyPhoneNumber(user.multiFactor.enrolledFactors[0].uid, multiFactorSession);
+
+            alert("OTP Sent! Check your phone.");
         } catch (error) {
             alert(error.message);
         }
-    });
+    }
 
-    document.getElementById("logout").addEventListener("click", async () => {
+    document.getElementById("verifyOtp").addEventListener("click", async () => {
+        const otpCode = document.getElementById("otp").value;
+
         try {
-            await signOut(auth);
-            alert("Signed Out Successfully!");
+            const credential = PhoneAuthProvider.credential(verificationId, otpCode);
+            await multiFactor(auth.currentUser).enroll(credential);
+            alert("2FA verification successful!");
+            window.location.href = "https://ashirvaad1.github.io/admin.html";
         } catch (error) {
-            alert(error.message);
+            alert("OTP Verification Failed: " + error.message);
         }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        document.getElementById("user-status").innerText = user ? `Logged in as: ${user.email}` : "No user logged in.";
     });
 </script>
 </body>
