@@ -204,16 +204,24 @@ function updateInsights(entries) {
         const visitDate = details.Time?.toDate();
         if (!visitDate) return;
         
-        // Format date as YYYY-MM-DD for grouping
-        const dateKey = visitDate.toISOString().split('T')[0];
+        // Format date as "D.M" (16.3)
+        const dateKey = `${visitDate.getDate()}.${visitDate.getMonth() + 1}`;
         
         if (!visitsByDate[dateKey]) {
             visitsByDate[dateKey] = 0;
         }
         visitsByDate[dateKey]++;
     });
-
-        const sortedDates = Object.keys(visitsByDate).sort();
+    
+    // Sort dates chronologically (needs special handling for day.month format)
+    const sortedDates = Object.keys(visitsByDate).sort((a, b) => {
+        const [dayA, monthA] = a.split('.').map(Number);
+        const [dayB, monthB] = b.split('.').map(Number);
+        
+        // Compare months first, then days
+        return monthA - monthB || dayA - dayB;
+    });
+    
     const visitCounts = sortedDates.map(date => visitsByDate[date]);
     
     // Get or create chart canvas context
@@ -253,7 +261,7 @@ function updateInsights(entries) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date (Day.Month)'
                     }
                 }
             },
@@ -263,6 +271,15 @@ function updateInsights(entries) {
                 },
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            // Show full date in tooltip while keeping axis labels short
+                            const dateLabel = context[0].label;
+                            const [day, month] = dateLabel.split('.');
+                            const fullDate = new Date();
+                            fullDate.setMonth(month - 1);
+                            fullDate.setDate(day);
+                            return fullDate.toLocaleDateString(); // Shows as "3/16/2025" or similar
+                        },
                         label: function(context) {
                             return `${context.parsed.y} patients`;
                         }
