@@ -415,7 +415,7 @@ label {
 /* Add to your style.css */
 .insights-panel {
     width: 400px;
-	max-width: 98%;
+	max-width: 50%;
 }
 
 .insights-chart-container {
