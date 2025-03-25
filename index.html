@@ -98,7 +98,7 @@
 
     // Get and Store FCM Token
     function getToken() {
-        messaging.getToken({ vapidKey: "YOUR_PUBLIC_VAPID_KEY" }).then(token => {
+        messaging.getToken({ vapidKey: "BFhnWhKJ1xOr9LSC4mvQ70EvbFzjtYPSvf_ktLqzU9f3MfBKBDw-QXMt8r7s6eXFeRoy9XzYcHGyw6IxvnAzv3Q" }).then(token => {
             if (token) {
                 console.log("FCM Token:", token);
                 saveTokenToFirestore(token);
