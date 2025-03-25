@@ -62,6 +62,7 @@
 </div>
 </footer>
 <script>
+    // Your Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
         authDomain: "hospital-47fce.firebaseapp.com",
@@ -84,10 +85,8 @@
         const bookAppointmentBtn = document.querySelector('.btn');
         if (bookAppointmentBtn) {
             bookAppointmentBtn.addEventListener('click', function(e) {
-                // Only proceed if it's not already granted
-                if (Notification.permission !== 'granted') {
-                    requestNotificationPermission();
-                }
+                e.preventDefault(); // Prevent immediate redirect
+                requestNotificationPermission();
             });
         }
     });
@@ -99,7 +98,7 @@
         }
 
         // Just check the current status without requesting
-        updateStatus(Notification.permission);
+        console.log('Current notification permission:', Notification.permission);
         if (Notification.permission === 'granted') {
             getFCMToken();
         }
@@ -108,27 +107,29 @@
     function requestNotificationPermission() {
         if (!('Notification' in window)) {
             console.log('Notifications are not supported in this browser');
+            redirectToAppointment();
             return;
         }
 
-        if (Notification.permission === 'default') {
+        if (Notification.permission === 'granted') {
+            getFCMToken();
+            redirectToAppointment();
+        } else if (Notification.permission === 'default') {
             Notification.requestPermission().then(function(permission) {
-                updateStatus(permission);
+                console.log('Notification permission:', permission);
                 if (permission === 'granted') {
                     getFCMToken();
                 }
+                redirectToAppointment();
             });
         } else {
-            updateStatus(Notification.permission);
-            if (Notification.permission === 'granted') {
-                getFCMToken();
-            }
+            // Permission was previously denied
+            redirectToAppointment();
         }
     }
 
-    function updateStatus(status) {
-        console.log('Notification permission: ' + status);
-        // You might want to add a hidden element to show this status to users
+    function redirectToAppointment() {
+        window.location.href = 'appointment.html';
     }
 
     function getFCMToken() {
@@ -138,7 +139,7 @@
                 // Here you would typically send this token to your server
                 // sendTokenToServer(currentToken);
             } else {
-                console.log('No registration token available. Request permission to generate one.');
+                console.log('No registration token available.');
             }
         }).catch((err) => {
             console.log('An error occurred while retrieving token. ', err);
