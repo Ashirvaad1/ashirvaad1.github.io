@@ -356,7 +356,7 @@ label {
     position: fixed;
     top: 5px;
     right: 5px;
-    width: 300px;
+    width: 400px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -364,6 +364,7 @@ label {
     padding: 15px;
     display: none;
     animation: slideIn 0.3s ease-out;
+	max-width: 98%;
 }
 
 @keyframes slideIn {
@@ -410,12 +411,6 @@ label {
 .insight-value {
     color: #007bff;
     font-size: 18px;
-}
-
-/* Add to your style.css */
-.insights-panel {
-    width: 400px;
-	max-width: 50%;
 }
 
 .insights-chart-container {
