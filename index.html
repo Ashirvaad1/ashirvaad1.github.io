@@ -62,110 +62,103 @@
 </div>
 </footer>
 <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
+    const firebaseConfig = {
+        apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
         authDomain: "hospital-47fce.firebaseapp.com",
         projectId: "hospital-47fce",
         storageBucket: "hospital-47fce.appspot.com",
         messagingSenderId: "54581383019",
         appId: "1:54581383019:web:07333ea8bf1594999b062e",
         measurementId: "G-4EB69QFJDZ"
-        };
+    };
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const messaging = firebase.messaging();
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check current permission status
-            checkNotificationPermission();
-            
-            // Request permission after 30 seconds
-            setTimeout(requestNotificationPermission, 30000);
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check current permission status but don't request immediately
+        checkNotificationPermission();
+        
+        // Request permission when user clicks the Book Appointment button
+        const bookAppointmentBtn = document.querySelector('.btn');
+        if (bookAppointmentBtn) {
+            bookAppointmentBtn.addEventListener('click', function(e) {
+                // Only proceed if it's not already granted
+                if (Notification.permission !== 'granted') {
+                    requestNotificationPermission();
+                }
+            });
+        }
+    });
 
-        function checkNotificationPermission() {
-            if (!('Notification' in window)) {
-                updateStatus('Notifications are not supported in this browser');
-                return;
-            }
+    function checkNotificationPermission() {
+        if (!('Notification' in window)) {
+            console.log('Notifications are not supported in this browser');
+            return;
+        }
 
+        // Just check the current status without requesting
+        updateStatus(Notification.permission);
+        if (Notification.permission === 'granted') {
+            getFCMToken();
+        }
+    }
+
+    function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            console.log('Notifications are not supported in this browser');
+            return;
+        }
+
+        if (Notification.permission === 'default') {
             Notification.requestPermission().then(function(permission) {
                 updateStatus(permission);
                 if (permission === 'granted') {
                     getFCMToken();
                 }
             });
-        }
-
-        function requestNotificationPermission() {
-            if (!('Notification' in window)) {
-                updateStatus('Notifications are not supported in this browser');
-                return;
+        } else {
+            updateStatus(Notification.permission);
+            if (Notification.permission === 'granted') {
+                getFCMToken();
             }
+        }
+    }
 
-            if (Notification.permission === 'default') {
-                Notification.requestPermission().then(function(permission) {
-                    updateStatus(permission);
-                    if (permission === 'granted') {
-                        getFCMToken();
-                    }
-                });
+    function updateStatus(status) {
+        console.log('Notification permission: ' + status);
+        // You might want to add a hidden element to show this status to users
+    }
+
+    function getFCMToken() {
+        messaging.getToken({ vapidKey: 'BGuXSlrCG8FEsOSw6muHfsb5yFvHstKf-QqSbVtc_pqnz1dWmkUVZBSGnlj7hb71P2vqciBcANv70Ps1Y4F7XL8' }).then((currentToken) => {
+            if (currentToken) {
+                console.log('FCM Token:', currentToken);
+                // Here you would typically send this token to your server
+                // sendTokenToServer(currentToken);
             } else {
-                updateStatus(Notification.permission);
-                if (Notification.permission === 'granted') {
-                    getFCMToken();
-                }
+                console.log('No registration token available. Request permission to generate one.');
             }
-        }
-
-        function updateStatus(status) {
-            const statusElement = document.getElementById('status');
-            statusElement.textContent = 'Notification permission: ' + status;
-            
-            // Remove all classes
-            statusElement.className = 'status';
-            
-            // Add appropriate class based on status
-            if (status === 'granted') {
-                statusElement.classList.add('granted');
-            } else if (status === 'denied') {
-                statusElement.classList.add('denied');
-            } else {
-                statusElement.classList.add('default');
-            }
-        }
-
-        function getFCMToken() {
-            messaging.getToken({ vapidKey: 'BGuXSlrCG8FEsOSw6muHfsb5yFvHstKf-QqSbVtc_pqnz1dWmkUVZBSGnlj7hb71P2vqciBcANv70Ps1Y4F7XL8' }).then((currentToken) => {
-                if (currentToken) {
-                    console.log('FCM Token:', currentToken);
-                    const tokenElement = document.getElementById('token');
-                    tokenElement.textContent = 'FCM Token: ' + currentToken;
-                    tokenElement.style.display = 'block';
-                    
-                    // Here you would typically send this token to your server
-                    // sendTokenToServer(currentToken);
-                } else {
-                    console.log('No registration token available. Request permission to generate one.');
-                }
-            }).catch((err) => {
-                console.log('An error occurred while retrieving token. ', err);
-            });
-        }
-
-        // Handle incoming messages
-        messaging.onMessage((payload) => {
-            console.log('Message received. ', payload);
-            const notificationTitle = payload.notification.title;
-            const notificationOptions = {
-                body: payload.notification.body,
-                icon: payload.notification.icon || '/firebase-logo.png'
-            };
-            
-            new Notification(notificationTitle, notificationOptions);
+        }).catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
         });
-    </script>
+    }
+
+    // Handle incoming messages
+    messaging.onMessage((payload) => {
+        console.log('Message received. ', payload);
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+            body: payload.notification.body,
+            icon: payload.notification.icon || '/firebase-logo.png'
+        };
+        
+        // Only show notification if permission is granted
+        if (Notification.permission === 'granted') {
+            new Notification(notificationTitle, notificationOptions);
+        }
+    });
+</script>
 </body>
 </html>
