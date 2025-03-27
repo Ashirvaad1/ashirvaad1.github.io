@@ -1,4 +1,3 @@
-// firebase-messaging-sw.js
 importScripts('https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/11.4.0/firebase-messaging-compat.js');
 
@@ -12,18 +11,15 @@ const firebaseConfig = {
     measurementId: "G-4EB69QFJDZ"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Background message handler
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
     
-    const notificationTitle = payload.notification.title;
-    const notificationOptions = {
+    self.registration.showNotification(payload.notification.title, {
         body: payload.notification.body,
-        icon: payload.notification.icon || '/firebase-logo.png'
-    };
-
-    return self.registration.showNotification(notificationTitle, notificationOptions);
+        icon: payload.notification.icon || '/hospital-logo.png'
+    });
 });
