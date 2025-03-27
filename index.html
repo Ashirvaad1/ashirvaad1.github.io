@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life Hospital - Expert in healthcare services</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-messaging-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore-compat.js"></script> <!-- Added Firestore -->
 </head>
 <body>
 
@@ -47,23 +49,23 @@
 <footer>
 <h2>Contact Us</h2>
 <div id="footer">
-<div>
-    <p>🖂&nbsp;&nbsp;&nbsp;contact@lifehospital.com</p>
-    <p>📞&nbsp;&nbsp;&nbsp;+91 9876543210</p>
-    <p>🗺️&nbsp;&nbsp;&nbsp;123, Main Street, Basti, Uttar Pradesh</p>
+    <p>🖂 contact@lifehospital.com</p>
+    <p>📞 +91 9876543210</p>
+    <p>🗺️ 123, Main Street, Basti, Uttar Pradesh</p>
     <div class="social-links">
-        <a href="#" class="social-icon"><img src="facebook.jpg" alt="Facebook" class="links"></a>
-        <a href="#" class="social-icon"><img src="x.jpg" alt="X" class="links"></a>
-        <a href="#" class="social-icon"><img src="instagram.jpg" alt="Instagram" class="links"></a>
-        <a href="#" class="social-icon"><img src="whatsapp.jpg" alt="WhatsApp" class="links"></a>
-        <a href="#" class="social-icon"><img src="youtube.jpg" alt="YouTube" class="links"></a>
-    </div><br><hr><br>
-<p id="me">Developed and managed by Ashirvaad.</p>
-</div>
+        <a href="#"><img src="facebook.jpg" alt="Facebook" class="links"></a>
+        <a href="#"><img src="x.jpg" alt="X" class="links"></a>
+        <a href="#"><img src="instagram.jpg" alt="Instagram" class="links"></a>
+        <a href="#"><img src="whatsapp.jpg" alt="WhatsApp" class="links"></a>
+        <a href="#"><img src="youtube.jpg" alt="YouTube" class="links"></a>
+    </div>
+    <br><hr><br>
+    <p id="me">Developed and managed by Ashirvaad.</p>
 </div>
 </footer>
+
 <script>
-    // Your Firebase configuration
+    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyD6g1-cHCBJ-lhwFrr8L1ANehyGwkHjw6k",
         authDomain: "hospital-47fce.firebaseapp.com",
@@ -77,31 +79,25 @@
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
+    const db = firebase.firestore();  // ✅ Initialize Firestore
 
     document.addEventListener('DOMContentLoaded', async function() {
-        // Check current permission status but don't request immediately
         checkNotificationPermission();
         
         // Register service worker
         try {
-            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            console.log('ServiceWorker registration successful');
+            const registration = await navigator.serviceWorker.register("firebase-messaging-sw.js"); // ✅ Fixed path issue
+            console.log('Service Worker registered successfully');
+
             messaging.onMessage((payload) => {
-                console.log('Foreground message received. ', payload);
-                const notificationTitle = payload.notification.title;
-                const notificationOptions = {
-                    body: payload.notification.body,
-                    icon: payload.notification.icon || '/firebase-logo.png'
-                };
-                
-                if (Notification.permission === 'granted') {
-                    new Notification(notificationTitle, notificationOptions);
-                }
+                console.log('Foreground message received: ', payload);
+                showNotification(payload);
             });
+
         } catch (err) {
-            console.log('ServiceWorker registration failed: ', err);
+            console.log('Service Worker registration failed: ', err);
         }
-        
+
         // Request permission when user clicks the Book Appointment button
         const bookAppointmentBtn = document.querySelector('.btn');
         if (bookAppointmentBtn) {
@@ -117,19 +113,13 @@
             console.log('Notifications are not supported in this browser');
             return;
         }
-
         console.log('Current notification permission:', Notification.permission);
         if (Notification.permission === 'granted') {
             getFCMToken();
         }
     }
 
-    
-    // Initialize Firebase (Make sure you have already initialized Firebase)
-const messaging = firebase.messaging();
-
-// Request Notification Permission
-function requestNotificationPermission() {
+    function requestNotificationPermission() {
         if (!('Notification' in window)) {
             console.log('Notifications are not supported in this browser');
             redirectToAppointment();
@@ -155,50 +145,32 @@ function requestNotificationPermission() {
     function redirectToAppointment() {
         window.location.href = 'appointment.html';
     }
-    
-// Get FCM Token
-function getFCMToken() {
-    messaging.getToken({
-        vapidKey: "BGuXSlrCG8FEsOSw6muHfsb5yFvHstKf-QqSbVtc_pqnz1dWmkUVZBSGnlj7hb71P2vqciBcANv70Ps1Y4F7XL8" // Replace with your VAPID Key from Firebase
-    }).then((token) => {
-        if (token) {
-            console.log("FCM Token:", token);
-            saveTokenToFirestore(token);
-        } else {
-            console.log("No token received.");
-        }
-    }).catch((error) => console.error("Error getting token:", error));
-}
 
-// Save Token to Firestore
-function saveTokenToFirestore(token) {
-    const user = firebase.auth().currentUser;
-    if (user) {
-        db.collection("users").doc(user.uid).set({ fcmToken: token }, { merge: true });
+    function getFCMToken() {
+        messaging.getToken({
+            vapidKey: "BGuXSlrCG8FEsOSw6muHfsb5yFvHstKf-QqSbVtc_pqnz1dWmkUVZBSGnlj7hb71P2vqciBcANv70Ps1Y4F7XL8"
+        }).then((token) => {
+            if (token) {
+                console.log("FCM Token:", token);
+                saveTokenToFirestore(token);
+            } else {
+                console.log("No token received.");
+            }
+        }).catch((error) => console.error("Error getting token:", error));
     }
-}
 
-// Handle Incoming Messages
-messaging.onMessage((payload) => {
-    console.log("Message received:", payload);
-    new Notification(payload.notification.title, {
-        body: payload.notification.body,
-        icon: payload.notification.icon
-    });
-});
+    function saveTokenToFirestore(token) {
+        db.collection("users").doc("user_token").set({ fcmToken: token }, { merge: true }) // ✅ Fixed Firestore issue
+        .then(() => console.log("Token saved to Firestore"))
+        .catch((error) => console.error("Error saving token:", error));
+    }
 
-// Call this function when the page loads
-requestNotificationPermission();
-    // Register the Service Worker
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/firebase-messaging-sw.js")
-        .then((registration) => {
-            console.log("Service Worker Registered:", registration);
-            messaging.useServiceWorker(registration);
-        })
-        .catch((error) => console.error("Service Worker Registration Failed:", error));
-}
-
+    function showNotification(payload) {
+        new Notification(payload.notification.title, {
+            body: payload.notification.body,
+            icon: payload.notification.icon
+        });
+    }
 </script>
 </body>
 </html>
